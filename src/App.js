@@ -8,13 +8,17 @@ function App() {
       for (let col = 0; col < 8; col++) {
         const squareColor = (row + col) % 2 === 0 ? 'white' : 'black'; // Alternate colors
         rowSquares.push(
-          <td key={`${row}-${col}`} id={`${row}-${col}`} className={`box ${squareColor}`} onMouseOver={(e) => showPath(e)}></td>
+          <td key={`${row}-${col}`} id={`${row}-${col}`} className={`box ${squareColor}`} 
+          onMouseOver={(e) => showPath(e)}
+          onMouseLeave={(e) => leaveMouse(e)}></td>
         );
       }
       sqrs.push(<tr key={row}>{rowSquares}</tr>);
     }
     return sqrs;
   }
+
+  let storageOfPossibleMoves = [];
 
   const showPath = (e) => {
     // console.log(e.target.id);
@@ -23,15 +27,20 @@ function App() {
     if(id===undefined){
       return;
     }
-    
-    removeYellow(e.target);
 
     let [curr_row, curr_col] = id.split("-").map(idx => idx);
 
     let directionVector = getDirectionVector('queen');
     let maxRadius = getMaxiumRadius('queen');
-    let storageOfPossibleMoves = possibleMoves(parseInt(curr_row), parseInt(curr_col), 8, 8, directionVector, maxRadius);
+    storageOfPossibleMoves = possibleMoves(parseInt(curr_row), parseInt(curr_col), 8, 8, directionVector, maxRadius);
     colorMyPossibleMoves(storageOfPossibleMoves, e.target);
+  }
+
+  const leaveMouse = (e) => {
+    console.log(storageOfPossibleMoves);
+    for(const [k,v] of Object.entries(storageOfPossibleMoves)){
+      document.getElementById(k).classList.remove("yellow");
+    }
   }
 
   return (
@@ -45,9 +54,7 @@ function App() {
   );
 }
 
-function removeYellow(box){
-    box.classList.remove("yellow");
-}
+
 
 function getDirectionVector(player) {
   if (player === "king") {
@@ -96,11 +103,11 @@ function possibleMoves(curr_row, curr_col, N, M, direction, maxRadius) {
 }
 
 function colorMyPossibleMoves(storageOfPossibleMoves, box) {
-    console.log(box); 
-    let curr_dataIndex = box.id;
-    if (storageOfPossibleMoves[curr_dataIndex]) {
-      box.classList.add("yellow");
+
+    for(const [k,v] of Object.entries(storageOfPossibleMoves)) {
+        document.getElementById(k).classList.add("yellow");
     }
+
 }
 
 export default App;
